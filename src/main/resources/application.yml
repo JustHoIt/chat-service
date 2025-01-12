@@ -1,6 +1,11 @@
 spring:
   application:
     name: chat-service
+  datasource:
+    url: jdbc:mysql://localhost:3308/chat_service
+    username: ${mysql.username}
+    password: ${mysql.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 
 
