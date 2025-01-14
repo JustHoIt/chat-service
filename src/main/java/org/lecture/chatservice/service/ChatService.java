@@ -9,6 +9,7 @@ import org.lecture.chatservice.entity.MemberChatroomMapping;
 import org.lecture.chatservice.repository.ChatroomRepository;
 import org.lecture.chatservice.repository.MemberChatroomMappingRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,10 +31,7 @@ public class ChatService {
 
         chatroom = chatroomRepository.save(chatroom);
 
-        MemberChatroomMapping memberChatroomMapping = MemberChatroomMapping.builder()
-                .member(member)
-                .chatroom(chatroom)
-                .build();
+        MemberChatroomMapping memberChatroomMapping = chatroom.addMember(member);
 
         memberChatroomMapping = memberChatroomMappingRepository.save(memberChatroomMapping);
 
@@ -58,6 +56,8 @@ public class ChatService {
         return true;
     }
 
+
+    @Transactional
     public Boolean leaveChatroom(Long chatroomId, Member member) {
         if (!memberChatroomMappingRepository.existsByMemberIdAndChatroomId(member.getId(), chatroomId)) {
             log.info("해당하는 채팅방이 없습니다.");
