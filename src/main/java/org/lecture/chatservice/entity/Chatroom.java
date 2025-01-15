@@ -26,10 +26,16 @@ public class Chatroom {
 
     LocalDateTime createdAt; //채팅방 생성시간
 
-    LocalDateTime lastChatAt; //마지막 채팅시간
-
     @OneToMany(mappedBy = "chatroom")
     Set<MemberChatroomMapping> memberChatroomMappingSet = new HashSet<>();
+
+    @Transient
+    Boolean hasNewMessage;
+
+    public void setHasNewMessage(Boolean hasNewMessage) {
+        this.hasNewMessage = hasNewMessage;
+    }
+
 
     public MemberChatroomMapping addMember(Member member) {
         if (this.getMemberChatroomMappingSet() == null) {
