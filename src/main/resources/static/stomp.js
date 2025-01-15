@@ -44,12 +44,6 @@ function sendMessage() {
     $("#message").val("")
 }
 
-function showMessage(chatMessage) {
-    $("#messages").append(
-        "<tr><td>" + chatMessage.sender + " : " + chatMessage.message
-        + "</td></tr>");
-}
-
 function createChatroom() {
     $.ajax({
         type: 'POST',
@@ -100,6 +94,7 @@ let subscription;
 function enterChatroom(chatroomId, newMember) {
     $("#chatroom-id").val(chatroomId);
     $("#messages").html("");
+    showMessages(chatroomId);
     $("#conversation").show();
     $("#send").prop("disabled", false);
     $("#leave").prop("disabled", false);
@@ -123,10 +118,37 @@ function enterChatroom(chatroomId, newMember) {
         stompClient.publish({
             destination: "/pub/chats/" + chatroomId,
             body: JSON.stringify(
-                {'message': "님이" + chatroomId + " 채팅방에 재입장했습니다."})
+                {'message': "님이" + chatroomId + " 번 채팅방에 재입장했습니다."})
         })
     }
 }
+
+
+function showMessages(chatroomId) {
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: '/chats/' + chatroomId + '/messages',
+        success: function (data) {
+            console.log('data', data);
+            for (let i = 0; data.length; i++) {
+                showMessage(data[i]);
+            }
+        },
+        error: function (request, status, error) {
+            console.log('request', request);
+            console.log('error', error);
+        }
+    })
+}
+
+function showMessage(chatMessage) {
+
+    $("#messages").append(
+        "<tr><td>" + chatMessage.sender + " : " + chatMessage.message + " ( " + chatMessage.time + " ) " +
+        "</td></tr>");
+}
+
 
 function joinChatroom(chatroomId) {
     $.ajax({
@@ -162,6 +184,7 @@ function leaveChatroom() {
         }
     })
 }
+
 
 function exitChatroom(chatroomId) {
     $("#chatroom-id").val("");

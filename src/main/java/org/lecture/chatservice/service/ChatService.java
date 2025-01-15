@@ -6,11 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.lecture.chatservice.entity.Chatroom;
 import org.lecture.chatservice.entity.Member;
 import org.lecture.chatservice.entity.MemberChatroomMapping;
+import org.lecture.chatservice.entity.Message;
 import org.lecture.chatservice.repository.ChatroomRepository;
 import org.lecture.chatservice.repository.MemberChatroomMappingRepository;
+import org.lecture.chatservice.repository.MemberRepository;
+import org.lecture.chatservice.repository.MessageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +25,8 @@ public class ChatService {
 
     private final ChatroomRepository chatroomRepository;
     private final MemberChatroomMappingRepository memberChatroomMappingRepository;
+    private final MemberRepository memberRepository;
+    private final MessageRepository messageRepository;
 
 
     public Chatroom createChatroom(Member member, String title) {
@@ -76,4 +82,24 @@ public class ChatService {
                 .map(MemberChatroomMapping::getChatroom)
                 .toList();
     }
+
+    public Message saveMessage(Member member, Long chatroomId, String text) {
+        Chatroom chatroom = chatroomRepository.findById(chatroomId).get();
+
+        Message message = Message.builder()
+                .text(text)
+                .createdAt(LocalDateTime.now())
+                .member(member)
+                .chatroom(chatroom)
+                .build();
+
+        return messageRepository.save(message);
+
+    }
+
+    public List<Message> getMessageList(Long chatroomId) {
+
+        return messageRepository.findAllByChatroomId(chatroomId);
+    }
+
 }
