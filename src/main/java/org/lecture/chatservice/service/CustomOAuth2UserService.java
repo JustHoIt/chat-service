@@ -25,33 +25,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        Map<String, Object> attributeMap = oAuth2User.getAttribute("kakao_account");
-        String email = (String) attributeMap.get("email");
+        String email = oAuth2User.getAttribute("email");
         Member member = memberRepository.findByEmail(email)
-                .orElseGet(() -> registerMember(attributeMap));
+                .orElseGet(() -> {
+                    Member newMember = MemberFactory.create(oAuth2User, userRequest);
+                    return memberRepository.save(newMember);
+                });
 
         return new CustomOAuth2User(member, oAuth2User.getAttributes());
     }
 
-    private Member registerMember(Map<String, Object> attributeMap) {
-        Member member = Member.builder()
-                .email((String) attributeMap.get("email"))
-                .nickName((String) ((Map) attributeMap.get("profile")).get("nickname"))
-                .name((String) attributeMap.get("name"))
-                .phoneNumber((String) attributeMap.get("phone_number"))
-                .gender(Gender.valueOf(((String)attributeMap.get("gender")).toUpperCase()))
-                .birthDay(getBirthDay(attributeMap))
-                .role("ROLE_USER")
-                .build();
-
-        return memberRepository.save(member);
-    }
-
-    private LocalDate getBirthDay(Map<String, Object> attributeMap) {
-        String birthYear = (String) attributeMap.get("birthyear");
-        String birthday = (String) attributeMap.get("birthday");
-
-
-        return LocalDate.parse(birthYear + birthday, DateTimeFormatter.BASIC_ISO_DATE);
-    }
 }
