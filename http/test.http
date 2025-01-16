@@ -1,0 +1,22 @@
+### GET request to example server
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+###
+
+###
+POST http://localhost:8080/consultants
+Content-Type: application/json
+
+{
+  "email": "consultant@service.com",
+  "name" : "김상담",
+  "nickName": "상담사12",
+  "birthDay": "1997-07-21",
+  "phoneNumber": "01234567890",
+  "password": "password123",
+  "confirmedPassword": "password123",
+  "gender": "FEMALE",
+  "role": "ROLE_CONSULTANT"
+}
+###
