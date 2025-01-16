@@ -3,6 +3,7 @@ package org.lecture.chatservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.lecture.chatservice.dto.ChatroomDto;
 import org.lecture.chatservice.entity.Chatroom;
 import org.lecture.chatservice.entity.Member;
 import org.lecture.chatservice.entity.MemberChatroomMapping;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -118,4 +120,9 @@ public class ChatService {
         return messageRepository.findAllByChatroomId(chatroomId);
     }
 
+    @Transactional
+    public ChatroomDto getChatroom(Long chatroomId) {
+        Chatroom chatroom = chatroomRepository.findById(chatroomId).get();
+        return ChatroomDto.from(chatroom);
+    }
 }
